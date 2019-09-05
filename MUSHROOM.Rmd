@@ -1,0 +1,74 @@
+---
+title: "Mushroom"
+author: "Erinda Budo"
+date: "9/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+**IMPORT MUSHROOM DATASET**
+
+```{r}
+geturl <- "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
+  df <- read.table(file = geturl, header = FALSE, sep = ",")
+ head(df)
+```
+**CREATE THE DATASET**
+```{r}
+M1 <- df[,1:2]
+M2 <- df[,22:23]
+#the two are combined into one data frame
+mushroom <- cbind(M1, M2)
+head(mushroom)
+```
+**RENAME COLUMN**
+
+
+```{r}
+names(mushroom) <- c("Edible/Poisonous", "Cap-Shape","Population","Habitat")
+```
+
+**REPLACE ABBREVIATIONS**
+```{r}
+levels(mushroom$`Edible/Poisonous`) <- c(levels(mushroom$`Edible/Poisonous`), c("Edible","Poisonous"))
+mushroom$`Edible/Poisonous`[mushroom$`Edible/Poisonous` == "e"] <- "Edible"
+mushroom$`Edible/Poisonous`[mushroom$`Edible/Poisonous` == "p"] <- "Poisonous"
+
+
+levels(mushroom$`Cap-Shape`) <- c(levels(mushroom$`Cap-Shape`), c("Bell","Conical","Convex","Flat","Knobbed","Sunken"))
+mushroom$`Cap-Shape`[mushroom$`Cap-Shape` == "b"] <- "Bell"
+mushroom$`Cap-Shape`[mushroom$`Cap-Shape` == "c"] <- "Conical"
+mushroom$`Cap-Shape`[mushroom$`Cap-Shape` == "x"] <- "Convex"
+mushroom$`Cap-Shape`[mushroom$`Cap-Shape` == "f"] <- "Flat"
+mushroom$`Cap-Shape`[mushroom$`Cap-Shape` == "k"] <- "Knobbed"
+mushroom$`Cap-Shape`[mushroom$`Cap-Shape` == "s"] <- "Sunken"
+
+levels(mushroom$`Population`) <- c(levels(mushroom$`Population`), c("Abundant","Clustered","Numerous","Scattered","Several","Solitary"))
+mushroom$`Population`[mushroom$`Population` == "a"] <- "Abundant"
+mushroom$`Population`[mushroom$`Population` == "c"] <- "Clustered"
+mushroom$`Population`[mushroom$`Population` == "n"] <- "Numerous"
+mushroom$`Population`[mushroom$`Population` == "s"] <- "Scattered"
+mushroom$`Population`[mushroom$`Population` == "v"] <- "Several"
+mushroom$`Population`[mushroom$`Population` == "y"] <- "Solitary"
+
+levels(mushroom$`Habitat`) <- c(levels(mushroom$`Habitat`), c("Grasses","Leaves","Meadows","Paths","Urban","Waste","Woods"))
+mushroom$`Habitat`[mushroom$`Habitat` == "g"] <- "Grasses"
+mushroom$`Habitat`[mushroom$`Habitat` == "l"] <- "Leaves"
+mushroom$`Habitat`[mushroom$`Habitat` == "m"] <- "Meadows"
+mushroom$`Habitat`[mushroom$`Habitat` == "p"] <- "Paths"
+mushroom$`Habitat`[mushroom$`Habitat` == "u"] <- "Urban"
+mushroom$`Habitat`[mushroom$`Habitat` == "w"] <- "Waste"
+mushroom$`Habitat`[mushroom$`Habitat` == "d"] <- "Woods"
+```
+
+**FINAL DATASET**
+
+```{r}
+head(mushroom)
+```
+
