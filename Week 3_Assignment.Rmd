@@ -1,0 +1,160 @@
+---
+title: "Week 3-Assignemnt-Character Manipulation and Date Processing"
+author: "Erinda Budo"
+date: "9/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Please deliver links to an R Markdown file (in GitHub and rpubs.com) with solutions to problems 3 and 4 from chapter 8 of Automated Data Collection in R.  Problem 9 is extra credit.
+
+
+
+Problems 
+
+# 3.Copy the introductory example. The vector name stores the extracted names
+
+```{r}
+library(stringr)
+raw.data <- "555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+main_names <- unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}"))  # extract names only.
+```
+
+```{r}
+main_names
+```
+
+(a)Use the tools of this chapter to rearrange the vector so that all elements conform to the standard first_name last_name.
+
+
+```{r}
+names1 <- str_replace(main_names, "\\s[A-z]\\. ", " ")#remove initials and then replace with blank
+```
+
+```{r}
+names2  <- str_replace(names1, "(\\w+),\\s(\\w+)", "\\2 \\1")#find words and then swap.switch from last name first name to first name last name
+```
+
+
+
+```{r}
+final_names  <- sub("[A-z]{2,3}\\. ","",names2)#Remove titles
+```
+
+
+```{r}
+final_names 
+```
+
+
+(b)Construct a logical vector indicating whether a character has a title.
+
+
+```{r}
+title <- str_detect(names2,"[A-z]{2,3}\\. ")
+df_title <- data.frame(names2,title)
+df_title 
+```
+(c).Construct a logical vector indicating whether a character has a second name
+
+
+
+```{r}
+second_name <- str_detect(main_names," [A-Z]{1}\\. ")
+df_name <- data.frame(main_names,second_name)
+df_name
+```
+# 4.Describe the types of strings that conform to the following regular expressions and
+construct an example that is matched by the regular expression.
+
+(a) [0-9]+\\$ 
+
+It matches vector containing a range of number from 0 to 9 (one or more digits) and ending with a dollar sign.
+
+
+```{r}
+reg_exp <- "The average salary amount for data scientist can be over 100000$"
+str_extract_all(reg_exp, "[0-9]+\\$" )
+```
+
+
+(b) \\b[a-z]{1,4}\\b
+
+It matches vector containing a word Edge   with 1 to 4 lowercase letters
+
+```{r}
+lower <- "automated data collection with r"
+unlist(str_extract_all(lower, "\\b[a-z]{1,4}\\b"))
+```
+
+(c) .*?\\.txt$ 
+
+It matches vector that ends in .txt
+
+
+```{r}
+text <- c("You should write a text with 500 words", "You can save the file.txt")
+unlist(str_extract_all(text, ".*?\\.txt$"))
+```
+
+(d) \\d{2}/\\d{2}/\\d{4} 
+
+It matches vector with two digits and  forward slash, two digits and  foward slash, four digits.
+
+```{r}
+digit <- c("Today is  09/11/2019", "Can you guess 9/11/9")
+unlist(str_extract_all(digit, "\\d{2}/\\d{2}/\\d{4}"))
+```
+
+(e) <(.+?)>.+?</\\1>
+
+It matches vector that starts with a zero or more letter inside inequality symbol and ends with forward slash and the same word or letter inside inequality symbol-Pulls a html code
+
+```{r}
+compare <- c("<p> Assignment number three </p>")
+unlist(str_extract_all(compare, "<(.+?)>.+?</\\1>"))
+```
+
+
+# 9. The following code hides a secret message. Crack it with R and regular expressions.Hint: Some of the characters are more revealing than others! 
+
+
+clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0Tanwo
+Uwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigO
+d6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5
+fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr
+
+
+```{r}
+secret_message <- "clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0Tanwo
+Uwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigO
+d6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5
+fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr"
+```
+
+Get all capital letters and periods
+
+
+```{r}
+secret_message1 <- unlist(str_extract_all(secret_message, "[[A-Z].]"))
+secret_message1
+
+```
+
+Put the letters together and  remove the spaces
+
+
+```{r}
+secret_message1 <- paste(secret_message1, collapse = "")
+secret_message1
+```
+Replace  '.' with a space
+
+```{r}
+str_replace_all(secret_message1, "[.]", " ")
+secret_message1
+```
