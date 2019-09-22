@@ -1,0 +1,163 @@
+---
+title: "Project 1"
+author: "Erinda Budo"
+date: "9/18/2019"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this project, we’re given a text file with chess tournament results where the information has some structure.The task is to generate a .CSV file (that could for example be imported into a SQL database) with the following information for all of the players:
+
+ PlayerName  | State |TotalPoints|PreRating |AvgOppPreRating |
+-------------| ------|-----------|----------|----------------|
+ Gary Hua    | ON    |  6.0      | 1794     |  1605          |
+
+
+
+------------------------------------------------------------------------------------------
+
+```{r,warning=FALSE,message=FALSE} 
+#Load necessary libraries
+library(stringr)
+library(DT)
+library(dplyr)
+library(tidyverse)
+```
+
+
+**LOAD DATA**
+
+```{r}
+# Load the data from the file in my github repository
+get_url <- 'https://raw.githubusercontent.com/ErindaB/Data607_Assignment/master/tournamentinfo.txt'
+raw_data <- read.delim(get_url, header=FALSE, stringsAsFactors =FALSE )
+head(raw_data)
+```
+
+
+The chess tournament text file is written in a format that is not legible in R as it is. This file needs to be restructured in order to find the average pre-tournament score.
+
+
+```{r}
+#Remove the header which is comprised of two rows
+raw_data <- raw_data[c(5:nrow(raw_data)),]
+head(raw_data)
+```
+
+**Extracting main variables from the file**
+
+```{r}
+id_var <- "\\d{1,2}(?=\\s\\|)"
+chess_id <- unlist(str_extract_all(unlist(raw_data), id_var))
+```
+
+
+*Extract player's names*
+```{r}
+# Extract the player's names 
+# Get names in  capital letters, followed by a space and with at least two matches
+
+name <- "([[:upper:]]+\\s){2,}"
+player_name <- unlist(str_extract_all(unlist(raw_data),name))
+str_trim(player_name, side = "right")
+```
+
+
+
+*Extract player's total points*
+
+```{r}
+# Extract each player's total number of points
+
+points <- "\\d\\.\\d"
+total_points <- unlist(str_extract_all(unlist(raw_data), points))
+total_points
+```
+
+*Extract states*
+
+```{r}
+# Extract each player's state
+# Get state by  2 capital letters,followed by a space and  '|'
+
+state <- "([[:upper:]]){2}\\s(?=\\|)"
+states <- unlist(str_extract_all(unlist(raw_data), state))
+str_trim(states, side = "right")
+```
+
+
+*Extract pre-rating*
+```{r}
+#  Extract each player's pre-rating
+#  Avoid  patterns with a > and a space. Then search for between 1 and two spaces, or one space and a colon, followed by 3 or 4 digits, and  a space or the letter 'P'
+
+feature <- "(?<!\\>\\s)(?<=\\s{1,2}|\\s\\:)(\\d{3,4}(?=\\s|P))"
+pre_rating <- unlist(str_extract_all(unlist(raw_data), feature))
+pre_rating <- str_trim(pre_rating)
+pre_rating
+```
+
+
+*Extract average of opponents pre-rating*
+```{r}
+
+opponents_pattern <- "(\\d{1,}|[[:blank:]]{1})(?=\\|)"
+player_opponents <- unlist(str_extract_all(unlist(raw_data), opponents_pattern))
+player_opponents[player_opponents==" "]  <- NA
+opponent1 <- as.numeric(player_opponents[seq(4, length(player_opponents), 10)])
+opponent1 <- as.numeric(opponent1[seq(1, length(opponent1), 2)])
+opponent2 <- as.numeric(player_opponents[seq(5, length(player_opponents), 10)])
+opponent2 <- as.numeric(opponent2[seq(1, length(opponent2), 2)])
+opponent3 <- as.numeric(player_opponents[seq(6, length(player_opponents), 10)])
+opponent3 <- as.numeric(opponent3[seq(1, length(opponent3), 2)])
+opponent4 <- as.numeric(player_opponents[seq(7, length(player_opponents), 10)])
+opponent4 <- as.numeric(opponent4[seq(1, length(opponent4), 2)])
+opponent5 <- as.numeric(player_opponents[seq(8, length(player_opponents), 10)])
+opponent5 <- as.numeric(opponent5[seq(1, length(opponent5), 2)])
+opponent6 <- as.numeric(player_opponents[seq(9, length(player_opponents), 10)])
+opponent6 <- as.numeric(opponent6[seq(1, length(opponent6), 2)])
+opponent7 <- as.numeric(player_opponents[seq(10, length(player_opponents), 10)])
+opponent7 <- as.numeric(opponent7[seq(1, length(opponent7), 2)])
+player_opponents <- matrix(c(opponent1, opponent2, opponent3, opponent4, opponent5, opponent6, opponent7),nrow = 64, ncol = 7)
+
+# Match the opponent to the player's id
+
+AvgOppRating<- 0
+chess_tournament <- 0
+for (i in 1:(length(chess_id)))
+{
+  AvgOppRating[i] <- mean(as.numeric(pre_rating[player_opponents[i,]]), na.rm = T)
+}
+
+
+```
+
+
+*Create a table with all new variables*
+
+```{r}
+AvgOppRating<-round(AvgOppRating)
+chess_tournament <- data.frame(player_name,states, total_points, pre_rating, AvgOppRating)
+chess_tournament
+```
+
+**Write info to .csv file**
+
+```{r}
+write.csv(chess_tournament, file = "chess_tournament.csv")
+
+```
+
+**Exploratory Plot**
+
+```{r}
+p <- ggplot(chess_tournament, aes(pre_rating, AvgOppRating)) + geom_point(aes(color=total_points)) + ggtitle("Comparing Player Pre-Rating to Avg Opponent Pre-Rating \n  by Total Points Gained")
+p
+
+```
+
+
