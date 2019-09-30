@@ -1,0 +1,177 @@
+---
+title: "Tidying and Transforming Data"
+author: "Erinda Budo"
+date: "9/25/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+	          
+ 
+1)Create a .CSV file that includes all of the information on the flights table. You’re encouraged to use a “wide” structure similar to how the information appears above, so that you can practice tidying and transformations.
+
+
+```{r,warning=FALSE,message=FALSE} 
+library(tidyr)
+library(dplyr)
+library("ggplot2")
+
+```
+
+
+
+```{r}
+csv <- rbind(c("Airlines", "Status", "Los Angeles", "Phoenix", "San Diego", "San Francisco", "Seattle"),
+             c("ALASKA", "On Time", 497, 221, 212, 503, 1841),
+             c("ALASKA", "Delayed", 62, 12, 20, 102, 305),
+             c("AM WEST", "On Time", 694, 4840, 383, 320, 201),
+             c("AM WEST", "Delayed", 117, 415, 65, 129, 61))
+```
+
+
+
+```{r}
+write.table(csv, file = "flightss.csv", sep = ",", col.names=F, row.names=F)
+```
+
+2)Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy and transform your data.
+
+
+
+```{r}
+raw_data <- read.csv(paste0("https://raw.githubusercontent.com/ErindaB/Data607_Assignment/master/flights.csv"),stringsAsFactors = F); 
+raw_data
+```
+There are 5 columns for each city.Using gather from *tidyr* we can have them in only 1 column.
+
+```{r}
+tidyr_data <- gather(raw_data, City, Total, Los.Angeles:Seattle) %>% 
+              mutate(City = gsub( "\\.", " ", City)) %>%  ## using mutate to remove . from                                                                city names 
+                   arrange(Airlines)
+tidyr_data
+```
+Use of *dplyr* to tidy and transform the data
+
+
+
+```{r}
+spread_data <- spread(tidyr_data, "Status", "Total")
+spread_data
+```
+
+3) Perform analysis to compare the arrival delays for the two airline
+
+
+
+```{r}
+#arrange rows by City 
+spread_data2 <- spread_data %>%
+  arrange(City, Airlines)
+
+spread_data2 
+```
+
+```{r}
+#calculate the percentages of delayed and on time flights for each airline and destination
+spread_data3 <- spread_data2 %>% 
+        mutate(total = Delayed + `On Time`, percentDelayed = round(Delayed / total * 100, 2), 
+               percentOnTime = round(100 * `On Time` / total, 2)) 
+        
+spread_data3  
+```
+
+
+```{r}
+# Compare percentage of total delayed flights for each airline by creating a new summary table
+sumDf <- spread_data3 %>% 
+  group_by(Airlines) %>% 
+  summarise(totalDelayed = sum(Delayed), totalOnTime = sum(`On Time`), totalFlights = sum(total)) %>% 
+  mutate(percentDelayed = round(totalDelayed/totalFlights * 100, 2))
+
+sumDf 
+
+
+```
+
+
+
+```{r}
+#Total Percentage of Delayed Flights by Airline
+TotPercDelayedFlight <- ggplot(sumDf, aes(Airlines, percentDelayed)) + 
+  geom_bar(aes(fill = Airlines), position = "dodge", stat = "identity") + 
+  geom_text(aes(label = percentDelayed), vjust = -.5) +
+  ylab("Percentage of Delayed Flights") +
+  ggtitle("Total Percentage of Delayed Flights by Airline")
+
+
+TotPercDelayedFlight
+
+
+
+```
+
+```{r}
+
+#Compare the percentages of delayed flights for each airline by cities in a bar graph
+PercDelayedAirCities <- ggplot(spread_data3, aes(y=percentDelayed, x = Airlines, color = Airlines, fill = Airlines)) + 
+    geom_bar( stat = "identity") +
+    geom_text(aes(label = percentDelayed), vjust = -.5) +
+    facet_wrap(~City) +
+    ylim(0, 55) +
+    ylab("Percentage of Delayed Flights") +
+    ggtitle("Percentage of Delayed Flights by Airline and Cities")
+    
+PercDelayedAirCities
+
+
+
+```
+
+
+
+
+```{r}
+ #Total number of Flights by Airline and Destination
+PercDelayedAirCities1 <- ggplot(spread_data3, aes(y = total, x = Airlines, color = Airlines, fill = Airlines)) +     geom_bar( stat = "identity") +
+    geom_text(aes(label = total), vjust = -.3) +
+    facet_wrap(~City) +
+    ylim(0, 5500) +
+    ylab("Number of Flights") +
+    ggtitle("Number of Fights by Airline and Cities")
+
+PercDelayedAirCities1
+
+
+
+```
+
+
+
+
+```{r}
+#Compare the percentages of delayed flights for each airline by cities in a line graph
+ PercDelayedAirCities1<- ggplot(spread_data3, aes(x = City, y = percentDelayed, group = Airlines, color = Airlines, shape = Airlines)) + 
+  geom_point(aes(shape = Airlines)) + 
+  geom_line() + 
+  geom_text(aes(label = percentDelayed), vjust = -.4) +
+  labs(x = "Destination", y = "Percentage of Delayed flights") + 
+  theme(legend.title=element_blank()) +
+  ggtitle("Percentage of Delayed Flights by Airline and Cities")
+
+PercDelayedAirCities1
+
+
+
+
+```
+
+
+
+
+
+
+To sum up, AM West Airlines has a lower percentage of total delayed flights than Alaska Airlines. However, Alaska has lower percentages of delayed flights than AM West by destination. AM West has 5255 flights to Phoenix with 7.9% of those flights being delayed, while Alaska has only 233 Phoenix flights with 5.15% of flights delayed.Also AM West has  262 flights to Seattle with 23.28% of flights delayed, while Alaska has 2146 Seattle flights with 14.21% delayed.
