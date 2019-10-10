@@ -9,7 +9,7 @@
   </Book>
   <Book>
     <Book_Name>Natural Language Processing with Python</Book_Name>
-    <Book_Publication_Year>2017</Book_Publication_Year>
+    <Publication_Year>2017</Publication_Year>
     <Book_Authors>Steven Bird, Ewan Klein, and Edward Loper</Book_Authors>
     <Book_Comment>This is a book about Natural Language Processing. By "natural language" we mean a language that is used for everyday communication by humans
 </Book_Comment>
@@ -17,7 +17,7 @@
   </Book>
   <Book>
     <Book_Name>R for Data Science</Book_Name>
-    <Book_Publication_Year>2017</Book_Publication_Year>
+    <Publication_Year>2017</Publication_Year>
     <Book_Authors>Hadley Wickham, Garrett Grolemund</Book_Authors>
     <Book_Comment>This book will teach you how to do data science with R: You’ll learn how to get your data into R, get it into the most useful structure, transform it, visualise it and model it</Book_Comment>
   <Book_Price>49</Book_Price>
