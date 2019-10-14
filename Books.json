@@ -14,7 +14,7 @@
 	{"Book Name": "R for Data Science",
 	 "Book Publication Year": "2017",
 	 "Book Authors": "O'Reilly",
-	 "Book Comments": ["This book will teach you how to do data science with R: You’ll learn how to get your data into R, get it into the most useful structure, transform it, visualise it and model it"]
+	 "Book Comments": "This book will teach you how to do data science with R: You’ll learn how to get your data into R, get it into the most useful structure, transform it, visualise it and model it"
 	 "Book Price":"49"
 	}]
 }
