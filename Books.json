@@ -2,7 +2,7 @@
 	{"Book Name": "Python Data Science Handbook",
 	 "Publication Year": "2018",
 	 "Book Authors": "Jake VanderPlas",
-	 "Book Comments": ["The book introduces the core libraries essential for working with data in Python"]
+	 "Book Comments": "The book introduces the core libraries essential for working with data in Python"
 	 "Book Price":"35"
 	},
 	{"Book Name": "Natural Language Processing with Python",
