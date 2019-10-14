@@ -3,13 +3,13 @@
 	 "Publication Year": "2018",
 	 "Book Authors": "Jake VanderPlas",
 	 "Book Comments": ["The book introduces the core libraries essential for working with data in Python"]
-	 "Publication Year": "2018",
+	 
 	},
 	{"Book Name": "Natural Language Processing with Python",
 	 "Book Publication Year": "2017",
 	 "Book Authors": "Steven Bird, Ewan Klein, and Edward Loper",
 	 "Book Comments": ["This is a book about Natural Language Processing. By "natural language" we mean a language that is used for everyday communication by humans"]
-	 "Book Price":"41"
+	
 	},
 	{"Book Name": "R for Data Science",
 	 "Book Publication Year": "2017",
