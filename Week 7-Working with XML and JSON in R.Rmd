@@ -1,0 +1,113 @@
+---
+title: "Working with XML and JSON in R"
+author: "Erinda Budo"
+date: "13/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r,warning=FALSE,message=FALSE}
+library(RCurl)
+library(kableExtra)
+library(stringr)
+library(plyr)
+library(XML)
+library(jsonlite)
+library(rvest)
+```
+
+
+
+
+
+```{r,warning=FALSE,message=FALSE}
+#Read  the HTML Code
+html <- "http://htmlpreview.github.io/?https://https://github.com/ErindaB/Data607_Assignment/blob/master/books.html"
+
+
+#Parsing the Code using htmlParse
+htmlParse <- htmlParse(file = html)
+htmlParse
+```
+
+
+
+
+
+
+```{r,warning=FALSE,message=FALSE}
+#Read the XML Code
+
+xmlURL <- getURL('https://raw.githubusercontent.com/ErindaB/Data607_Assignment/master/Books.xml', ssl.verifyhost=FALSE, ssl.verifypeer=FALSE)
+
+#Parsing the Code using xmlParse
+xmlParse <- xmlParse(file = xmlURL[1])
+xmlParse
+```
+
+
+```{r,warning=FALSE,message=FALSE}
+#Reading in the JSON Code
+json <- "https://raw.githubusercontent.com/ErindaB/Data607_Assignment/master/Books.json"
+
+#Parsing the Code using fromJSON
+fromJSON <- fromJSON(json)
+fromJSON
+```
+
+
+
+
+
+```{r,warning=FALSE,message=FALSE}
+htmlURL <- "https://raw.githubusercontent.com/ErindaB/Data607_Assignment/master/books.html"
+
+
+#Parsing the Code using htmlParse
+readHtml <- read_html(htmlURL)
+sample <- html_nodes(readHtml,"table")
+sample1 <- html_table(sample, fill = TRUE)
+BooksHtml <- as.data.frame(sample1)
+
+
+head(BooksHtml) %>% kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% scroll_box(width="100%",height="400px")
+```
+
+
+
+```{r,warning=FALSE,message=FALSE}
+#Extract XML file's root
+root <- xmlRoot(xmlParse)
+
+#Loading into Data Frame
+BooksXML <- xmlToDataFrame(root)
+
+head(BooksXML) %>% kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% scroll_box(width="100%",height="300px")
+```
+
+
+
+
+
+
+
+```{r,warning=FALSE,message=FALSE}
+jsonURL <- "https://raw.githubusercontent.com/ErindaB/Data607_Assignment/master/Books.json"
+
+
+readjson <- read_json(jsonURL)
+sample1 <- html_table(sample, fill = TRUE)
+Booksjson <- as.data.frame(sample1)
+
+
+head(Booksjson) %>% kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% scroll_box(width="100%",height="400px")
+```
+
+
+*The three data frames  which were generated from .html , .json and .xml are the same*
